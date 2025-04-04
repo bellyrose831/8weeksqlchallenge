@@ -1,1 +1,8 @@
+Week 1 of the #8weekSQLChallenge: Danny's Diner 
+
+This case study poses the scenario of a new business owner, Danny, who has recently opened up a restaurant. He has collected a small amount of data, contained within three tables (sales, menu, and members), and wants to use this data to a) understand his customers, b) learn about trends in his business as to optimize revenue, and c) create quick references for him and his employees to use to make decisions. 
+
+Problem Statement
+Danny wants to use the data to answer a few simple questions about his customers, especially about their visiting patterns, how much money they’ve spent and also which menu items are their favourite. Having this deeper connection with his customers will help him deliver a better and more personalised experience for his loyal customers.
+He plans on using these insights to help him decide whether he should expand the existing customer loyalty program - additionally he needs help to generate some basic datasets so his team can easily inspect the data without needing to use SQL.
 
