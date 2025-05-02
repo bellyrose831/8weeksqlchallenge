@@ -11,3 +11,8 @@ Danny wants to use the data to answer a few simple questions about his customers
 He plans on using these insights to help him decide whether he should expand the existing customer loyalty program - additionally he needs help to generate some basic datasets so his team can easily inspect the data without needing to use SQL.
 
 ![Image](https://github.com/user-attachments/assets/b6e22ad9-f9e3-4a9a-85ad-0926d65aa5f4)
+
+#### Repo formatting:
+The "Solutions" file in this folder contains the questions, code, results, and an explanation of the code and results for each question in this case study. There are also two bonus questions on this case study that I will look to add to this document in the near future!
+
+The SQL code to answer these questions, with no additional information as to explanations or results, can also be found in the "Case Study Queries" file in this folder. To load the provided data in your environment, run the code from the "LoadData" file. 
