@@ -11,4 +11,4 @@ This case study (https://8weeksqlchallenge.com/case-study-2) poses the scenario 
 #### Repo formatting:
 The "Solutions" files in this folder contains the questions, code, results, and an explanation of the code and results for each question in this case study. The solutions are broken out into separate files based on their categories, as described above.
 
-The SQL code to answer these questions, with no additional information as to explanations or results, can also be found in the "Case Study Queries" files in this folder. To load the provided data in your environment, run the code from the "LoadData" and "Clean & Expand Data" files.
+The SQL code to answer these questions, with no additional information as to explanations or results, can also be found in the "Case Study Queries" files in this folder. To load the provided data in your environment, run the code from the "LoadData" file and from the "clean data" section of "Clean & Expand Data" file.
