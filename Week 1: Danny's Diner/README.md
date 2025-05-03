@@ -12,7 +12,7 @@ He plans on using these insights to help him decide whether he should expand the
 
 ![Image](https://github.com/user-attachments/assets/b6e22ad9-f9e3-4a9a-85ad-0926d65aa5f4)
 
-#### Repo formatting:
+#### Week 1 folder formatting:
 The "Solutions" file in this folder contains the questions, code, results, and an explanation of the code and results for each question in this case study, including the bonus questions!
 
 The SQL code to answer these questions, with no additional information as to explanations or results, can also be found in the "Case Study Queries" file in this folder. To load the provided data in your environment, run the code from the "LoadData" file. 
