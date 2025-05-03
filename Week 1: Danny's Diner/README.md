@@ -1,6 +1,6 @@
 ## Week 1 of the 8weekSQLChallenge: Danny's Diner 
 
-This case study poses the scenario of a new business owner, Danny, who has recently opened up a restaurant. He has collected a small amount of data, contained within three tables (sales, menu, and members), and wants to use this data to understand customer and business trends and to create quick references for him and his employees to use to make decisions. 
+This case study (https://8weeksqlchallenge.com/case-study-1) poses the scenario of a new business owner, Danny, who has recently opened up a restaurant. He has collected a small amount of data, contained within three tables (sales, menu, and members), and wants to use this data to understand customer and business trends and to create quick references for him and his employees to use to make decisions. 
 
 
 
