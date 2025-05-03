@@ -280,3 +280,88 @@ With this points system, customer A would have 1520 points and customer B would 
 | -------- | ------- |
 | A | 1520 |
 | B | 1240 |
+
+***
+# Bonus Questions
+
+### Join All The Things
+
+#### Explanation:
+This goal of this exercise was to replicate a table provided in the case study with customer_id, order_date, product_name, price, and member fields, with member being a Y/N value based on the customer's membership status at the time of purchase. To build that table, I joined all three of the tables, and wrote a case statement to determine the member value for each purchase based on a comparison of the join date (if there was one) and order date. For customers with no join date (customer C), all purchases had an 'N' in the member column.
+
+#### SQL: 
+	select sales.customer_id, order_date, product_name, price,
+	    case
+		when join_date is not null and order_date >= join_date then 'Y'
+	        else 'N'
+	    end as member
+	from sales
+	    left join members on sales.customer_id = members.customer_id
+	    left join menu on sales.product_id = menu.product_id
+	order by customer_id, order_date, product_name;
+
+ #### Results:
+| customer_id | order_date | product_name | price | member |
+| -------- | -------- | -------- | -------- | -------- |
+| A | 2021-01-01 | curry | 15 | N |
+| A | 2021-01-01 | sushi | 10 | N |
+| A | 2021-01-07 | curry | 15 | Y |
+| A | 2021-01-10 | ramen | 12 | Y |
+| A | 2021-01-11 | ramen | 12 | Y |
+| A | 2021-01-11 | ramen | 12 | Y |
+| B | 2021-01-01 | curry | 15 | N |
+| B | 2021-01-02 | curry | 15 | N |
+| B | 2021-01-04 | sushi | 10 | N |
+| B | 2021-01-11 | sushi | 10 | Y |
+| B | 2021-01-16 | ramen | 12 | Y |
+| B | 2021-02-01 | ramen | 12 | Y |
+| C | 2021-01-01 | ramen | 12 | N |
+| C | 2021-01-01 | ramen | 12 | N |
+| C | 2021-01-07 | ramen | 12 | N |
+
+***
+### Rank All The Things
+
+#### Explanation:
+This goal of this exercise was to replicate a table provided in the case study with the same fields as in the last prompt, as well as a new "ranking" field consisting of a numerical value or a null value, determined by the customer id, membership status, and order date. For puchases with member = 'Y', the ranking counts up from 1, starting with the earliest purchase, with multiple purchases made on the same day receiving the same rank. For purchases with member = 'N', the ranking is null. To calculate this new ranking value for all purchases, I used a CTE looking only at purchases that should have non-null values, and used the rank() function, then joined this table to the one created for the last exercise in order to build the required table for this task.
+
+#### SQL: 
+	with rankedPurchases as 
+	(
+		select distinct sales.customer_id, order_date, 
+  			rank () over (partition by sales.customer_id order by order_date) as rankVal
+		from sales
+			left join members on sales.customer_id = members.customer_id
+			left join menu on sales.product_id = menu.product_id
+		where join_date is not null and join_date <= order_date
+		order by customer_id, order_date
+	)
+	select sales.customer_id, sales.order_date, product_name, case
+	    when 
+		join_date is not null and sales.order_date >= join_date then 'Y'
+	        else 'N'
+	    end as member, rankVal
+	from sales
+	    left join members on sales.customer_id = members.customer_id
+	    left join menu on sales.product_id = menu.product_id
+	    left join rankedPurchases rp on sales.customer_id = rp.customer_id and sales.order_date = rp.order_date
+	order by customer_id, order_date, product_name;
+
+ #### Results:
+| customer_id | order_date | product_name | price | member | ranking |
+| -------- | -------- | -------- | -------- | -------- | -------- |
+| A | 2021-01-01 | curry | 15 | N | null |
+| A | 2021-01-01 | sushi | 10 | N | null |
+| A | 2021-01-07 | curry | 15 | Y | 1 |
+| A | 2021-01-10 | ramen | 12 | Y | 2 |
+| A | 2021-01-11 | ramen | 12 | Y | 3 |
+| A | 2021-01-11 | ramen | 12 | Y | 3 |
+| B | 2021-01-01 | curry | 15 | N | null |
+| B | 2021-01-02 | curry | 15 | N | null |
+| B | 2021-01-04 | sushi | 10 | N | null |
+| B | 2021-01-11 | sushi | 10 | Y | 1 |
+| B | 2021-01-16 | ramen | 12 | Y | 2 |
+| B | 2021-02-01 | ramen | 12 | Y | 3 |
+| C | 2021-01-01 | ramen | 12 | N | null |
+| C | 2021-01-01 | ramen | 12 | N | null |
+| C | 2021-01-07 | ramen | 12 | N | null |
