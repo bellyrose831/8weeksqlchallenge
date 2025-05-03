@@ -108,8 +108,8 @@ group by customer_id;
 with itemCount as (
 	select customer_id, product_name, price, order_date, count(*) as numItems
 	from sales
-		join menu on menu.product_id = sales.product_id
-    where order_date < '2021-02-01'
+	join menu on menu.product_id = sales.product_id
+	where order_date < '2021-02-01'
 	group by customer_id, product_name, price, order_date
 ),
 totalPoints as (
@@ -127,3 +127,37 @@ from totalPoints
 where customer_id = 'A' or customer_id = 'B'
 group by customer_id
 order by customer_id;
+
+-- Bonus Questions!
+
+-- Join All The Things
+select sales.customer_id, order_date, product_name, price,
+    case
+	when join_date is not null and order_date >= join_date then 'Y'
+        else 'N'
+    end as member
+from sales
+    left join members on sales.customer_id = members.customer_id
+    left join menu on sales.product_id = menu.product_id
+order by customer_id, order_date, product_name;
+
+-- Rank All The Things
+with rankedPurchases as 
+(
+	select distinct sales.customer_id, order_date, rank () over (partition by sales.customer_id order by order_date) as rankVal
+	from sales
+		left join members on sales.customer_id = members.customer_id
+		left join menu on sales.product_id = menu.product_id
+	where join_date is not null and join_date <= order_date
+	order by customer_id, order_date
+)
+select sales.customer_id, sales.order_date, product_name, case
+    when 
+	join_date is not null and sales.order_date >= join_date then 'Y'
+        else 'N'
+    end as member, rankVal
+from sales
+    left join members on sales.customer_id = members.customer_id
+    left join menu on sales.product_id = menu.product_id
+    left join rankedPurchases rp on sales.customer_id = rp.customer_id and sales.order_date = rp.order_date
+order by customer_id, order_date, product_name;
