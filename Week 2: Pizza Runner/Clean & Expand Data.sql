@@ -1,9 +1,9 @@
--- clean data
+-- Clean data
 
 -- Customer Orders
 -- exclusions and extras have funky data - we can clean these and create a temp table with the cleaned values
 drop table if exists cleaned_customer_orders;
-create temporary table cleaned_customer_orders (
+create table cleaned_customer_orders (
   id INTEGER,
   order_id INTEGER,
   customer_id INTEGER,
@@ -31,7 +31,7 @@ select * from cleaned_customer_orders;
 --  Runner Orders
 -- pickup_time, distance, duration, and cancellation fields need to be cleaned
 drop table if exists cleaned_runner_orders;
-create temporary table cleaned_runner_orders like runner_orders;
+create table cleaned_runner_orders like runner_orders;
 
 insert into cleaned_runner_orders
 select order_id, runner_id,
@@ -55,7 +55,7 @@ from runner_orders;
 
 select * from cleaned_runner_orders;
 
--- expand date
+-- Expand Menu
 -- prompt: If Danny wants to expand his range of pizzas - how would this impact the existing data design? Write an INSERT 
 -- statement to demonstrate what would happen if a new Supreme pizza with all the toppings was added to the Pizza Runner menu?
 
