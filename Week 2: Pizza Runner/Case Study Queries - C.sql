@@ -37,16 +37,15 @@ from cleaned_customer_orders cco
     left join exclusionsCondensed on cco.id = exclusionsCondensed.id
     join pizza_names on cco.pizza_id = pizza_names.pizza_id
 );
-
+select * from ordersWithWords;
 -- What are the standard ingredients for each pizza?
 with allToppings as (
 	select * 
 	from pizza_recipes 
-		join pizza_toppings
-	where toppings like concat(topping_id, ',%')
-		or toppings like concat('%, ', topping_id, ',%')
-		or toppings like concat('%, ', topping_id)
-		or toppings = topping_id
+		join pizza_toppings on toppings like concat(topping_id, ',%')
+			or toppings like concat('%, ', topping_id, ',%')
+			or toppings like concat('%, ', topping_id)
+			or toppings = topping_id
 )
 select pizza_name as Pizza, group_concat(topping_name separator ', ') as Ingredients
 from allToppings
@@ -128,7 +127,8 @@ extrasSplitOut as (
 		or extras like concat('%, ', topping_id, ',%')
 		or extras like concat('%, ', topping_id)
 		or cast(extras as char) = cast(topping_id as char)
-), allToppings as (
+), 
+allToppings as (
 	select *
 	from extrasSplitOut
 	FULL UNION
@@ -138,7 +138,8 @@ extrasSplitOut as (
 	select ordersWithWords.id, ordersWithWords.order_id, allMenuToppings.pizza_name, topping_name, toppingValue, sources
 	from allMenuToppings
 		join ordersWithWords on ordersWithWords.pizza_name = allMenuToppings.pizza_name
-), allToppingsRanked as (
+), 
+allToppingsRanked as (
 	select id, order_id, pizza_name, topping_name, sum(toppingValue),
 		case 
 			when sum(toppingValue) = 0 then null
@@ -148,7 +149,8 @@ extrasSplitOut as (
 	from allToppings
 	group by id, order_id, pizza_name, topping_name
 	order by id, topping_name
-), ingredientList as (
+), 
+ingredientList as (
 	select id, order_id, pizza_name, group_concat(toppingCount separator ', ') as ingredientslisted
 	from allToppingsRanked
 	where toppingCount is not null
