@@ -22,6 +22,7 @@ This question can be answered with a combination of a case statement and the sum
 | -------- |
 | 160 |
 
+***
 ### Q2. What if there was an additional $1 charge for any pizza extras?
 
 #### Explanation:
@@ -49,8 +50,48 @@ This question builds on the scenario from the previous question, so this query a
 | -------- |
 | 166 |
 
+***
 ### Q3. The Pizza Runner team now wants to add an additional ratings system that allows customers to rate their runner, how would you design an additional table for this new dataset - generate a schema for this new table and insert your own data for ratings for each successful customer order between 1 to 5.
 
+#### Explanation:
+For the ratings table, I included some basic fields - the runner_id and order_id to connect to existing data collected. Then, for the review itself, there is an optional comments field that accepts text (up to 200 characters) if they want to leave a detailed review and then a mandatory rating field that must be an integer value 1-5. Then, I inserted some data into that table (attempted to draw from the data to guess at reasonable reviews) for each of the orders that was delivered.
+
+#### SQL:
+        create temporary table runner_ratings (
+        	runner_id INTEGER NOT NULL,
+            order_id INTEGER NOT NULL,
+            comments VARCHAR(200),
+            rating INTEGER NOT NULL,
+            CHECK (rating <= 5)
+        );
+        INSERT INTO runner_ratings
+        	(runner_id, order_id, comments, rating)
+        VALUES
+        (1, 1, "nice kid, pizzas still felt fresh out of the oven even though we live pretty far" , 5),
+        (1, 2, "Had the same driver, nice to see a familiar face! Love to see kids getting involved in local businesses", 5),
+        (1, 3, null, 4),
+        (2, 4, "Took over an hour to get three pizzas", 2),
+        (3, 5, null, 4),
+        (2, 7, null, 5),
+        (2, 8, "dude had super speed" , 5),
+        (1, 10, null, 5);
+        
+        select * from runner_ratings
+        order by runner_id;
+
+#### Results:
+| runner_id | order_id | comments | rating |
+| -------- | -------- | -------- | -------- |
+| 1 |	1 |	nice kid, pizzas still felt fresh out of the oven even though we live pretty far |	5 |
+| 1 |	2 |	Had the same driver, nice to see a familiar face! Love to see kids getting involved in local businesses |	5 |
+| 1 |	3 | | 	4 |
+| 1 |	10 	|	| 5 |
+| 2 |	4 |	Took over an hour to get three pizzas |	2 |
+| 2 |	7 |	 |	5 |
+| 2 |	8 |	dude had super speed |	5 |
+| 3 |	5 |	|	4 |
+
+***
 ### Q4. Using your newly generated table - can you join all of the information together to form a table which has the following information for successful deliveries?
 - customer_id
 - order_id
@@ -63,6 +104,33 @@ This question builds on the scenario from the previous question, so this query a
 - Average speed
 - Total number of pizzas
 
+#### Explanation:
+This question's answer is fairly straightforward! The table is built by adding the results of a query as data in the newly created temporary table all_info. In that query, the new table from question 3 is combined with the customer orders and runner orders tables to retrieve all of the requested data. Orders that were cancelled by either party are excluded from the results and thereby the new table.
+
+#### SQL:
+        create temporary table all_info as (
+            select customer_id, rr.order_id, rr.runner_id, rating, order_time, pickup_time, timediff(pickup_time, order_time) as time_between_order_and_pickup, duration, round(distance / duration,2) as average_speed, count(id) as total_number_pizzas
+            from runner_ratings rr
+            	join cleaned_customer_orders cco on rr.order_id = cco.order_id
+                join cleaned_runner_orders cro on cro.order_id = cco.order_id
+            where cancellation is null
+            group by customer_id, rr.order_id, rr.runner_id, rating, order_time, pickup_time, time_between_order_and_pickup, duration, average_speed
+        );
+        select * from all_info;
+
+#### Results:
+| customer_id | order_id | runner_id | rating | order_time | pickup_time | time_between_order_and_pickup | duration | average_speed | total_number_pizzas |
+| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
+| 101 |	1 |	1 |	5 |	2020-01-01 18:05:02 |	2020-01-01 18:15:34 |	00:10:32.000000 |	32 |	0.62 |	1 |
+| 101 |	2 |	1 |	5 |	2020-01-01 19:00:52 |	2020-01-01 19:10:54 |	00:10:02.000000 |	27 |	0.74 |	1 |
+| 102 |	3 |	1 |	4 |	2020-01-02 23:51:23 |	2020-01-03 00:12:37 |	00:21:14.000000 |	20 |	0.67 |	2 |
+| 103 |	4 |	2 |	2 |	2020-01-04 13:23:46 |	2020-01-04 13:53:03 |	00:29:17.000000 |	40 |	0.58 |	3 |
+| 104 |	5 |	3 |	4 |	2020-01-08 21:00:29 |	2020-01-08 21:10:57 |	00:10:28.000000 |	15 |	0.67 |	1 |
+| 105 |	7 |	2 |	5 |	2020-01-08 21:20:29 |	2020-01-08 21:30:45 |	00:10:16.000000 |	25 |	1 |	1 |
+| 102 |	8 |	2 |	5 |	2020-01-09 23:54:33 |	2020-01-10 00:15:02 |	00:20:29.000000 |	15	| 1.56|	1 |
+| 104 |	10 |	1 |	5 |	2020-01-11 18:34:49 |	2020-01-11 18:50:20 |	00:15:31.000000 |	10 |	1 |	2 |
+
+***
 ### Q5. If a Meat Lovers pizza was $12 and Vegetarian $10 fixed prices with no cost for extras and each runner is paid $0.30 per kilometre traveled - how much money does Pizza Runner have left over after these deliveries?
 
 #### Explanation:
